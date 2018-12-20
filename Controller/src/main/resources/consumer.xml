@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+       xmlns:p="http://www.springframework.org/schema/p"
+
+       xmlns:context="http://www.springframework.org/schema/context"
+
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+
+       http://www.springframework.org/schema/mvc
+
+       http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+
+       http://www.springframework.org/schema/context
+
+       http://www.springframework.org/schema/context/spring-context.xsd
+
+ http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <context:component-scan base-package="com.june.controller"/>
+    <!-- 静态资源映射 location是本地静态资源路径 mapping是映射的url地址，访问时就使用该地址 -->
+    <mvc:default-servlet-handler />
+    <!--web-info文件夹下面的用配置这个-->
+    <mvc:annotation-driven/>
+    <mvc:resources location="/js/" mapping="/js/**" />
+    <!-- 配置注解驱动 -->
+    <mvc:annotation-driven/>
+    <mvc:annotation-driven >
+        <!-- 消息转换器 -->
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <!-- 注解映射器 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean>
+    <!-- 注解适配器 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"></bean>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/view/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="dubbo_consumer"/>
+    <!-- 使用multicast广播注册中心暴露发现服务地址 -->
+    <dubbo:registry protocol="zookeeper" address="zookeeper://127.0.0.1:2181"/>
+
+    <!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
+<dubbo:reference interface="com.june.interfaces.IMyInterfaces" id="iMyInterfaces"></dubbo:reference>
+</beans>
